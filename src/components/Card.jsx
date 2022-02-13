@@ -3,15 +3,19 @@ import ReactDOM from 'react-dom';
 
 function Card (props) {
 
+    function handleClick() {
+        props.onCardClick(props.data);
+      }  
+
     return (
-            <article class="place">
-                <button class="place__button-delete"></button>
-                <img class="place__image" src={props.data.link} alt={props.data.name}/>
-                <div class="place__item">
-                    <h2 class="place__title">{props.data.name}</h2>
-                    <div class="place__container_like">
-                    <button type="button" class="place__heart-button"></button>
-                    <p class="place__heart-quantity">{props.data.likes.length}</p>
+            <article className="place">
+                <button className="place__button-delete"></button>
+                <img className="place__image" src={props.data.link} alt={props.data.name} onClick={handleClick}/>
+                <div className="place__item">
+                    <h2 className="place__title">{props.data.name}</h2>
+                    <div className="place__container_like">
+                    <button type="button" className="place__heart-button"></button>
+                    <p className="place__heart-quantity">{props.data.likes.length}</p>
                     </div>
                 </div>
             </article>

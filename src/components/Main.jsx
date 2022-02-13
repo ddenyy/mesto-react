@@ -13,7 +13,6 @@ function Main (props) {
     React.useEffect(() => {
         api.renderUserAndCards()
         .then(([user, data]) => {
-            console.log('все пришло')
             setUserName(user.name);
             setUserDescription(user.about);
             setUserAvatar(user.avatar);
@@ -24,7 +23,7 @@ function Main (props) {
     return (
         <main className="content page__content">
                 <section className="profile content__profile">
-                    <div className="profile__image" style={{ backgroundImage: `url(${userAvatar})` }}  alt="аватар" onClick={props.onEditAvatar}></div>
+                    <div className="profile__image" style={{backgroundImage: `url(${userAvatar})`}}  alt="аватар" onClick={props.onEditAvatar}></div>
                     <div className="profile__info">
                         <h1 className="profile__username">{userName}</h1>
                         <button aria-label="edit" type="button" className="profile__edit-button" onClick={props.onEditProfile}></button>
@@ -35,7 +34,7 @@ function Main (props) {
                 <section className="places page__places">
                 {cards.map((card) => {
                     return (
-                        <Card data={card}/>
+                        <Card data={card} onCardClick={props.onCardClick}/>
                     );
                 })}
                 </section>
