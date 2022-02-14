@@ -25,7 +25,7 @@ const configError = {
   inputSelector: ".popup__input",
   submitButtonSelector: ".popup__button_submit",
   inactiveButtonClass: "popup__button_disabled",
-  errorClass:"error-message_shown",
+  errorClass: "error-message_shown",
   inputErrorClass: "popup__input_type_error",
 };
 
