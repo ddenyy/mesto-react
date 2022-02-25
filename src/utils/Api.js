@@ -1,6 +1,5 @@
 
 
-
 class Api {
   constructor(options) {
     // тело конструктора

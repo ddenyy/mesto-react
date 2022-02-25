@@ -1,21 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {currentUserContext} from "../contexts/CurrentUserContext";
 
-function Card(props) {
+
+function Card({card, onCardClick, onCardLike, onCardDelete}) {
   
+  const currentUserData = React.useContext(currentUserContext)
+  
+  const isLiked = card.likes.some(i => i._id === currentUserData._id);
+
   function handleClick() {
-    props.onCardClick(props.data);
+    onCardClick(card);
+  }
+
+  function handleLikeClick () {
+    onCardLike(card)
+  }
+   
+  function handleCardDelete () {
+    onCardDelete(card)
   }
 
   return (
     <article className="place">
-      <button className="place__button-delete"></button>
-      <img className="place__image" src={props.data.link} alt={props.data.name} onClick={handleClick} />
+      {card.owner._id === currentUserData._id ? <button onClick={handleCardDelete} className="place__button-delete"></button> : <></>}
+      <img className="place__image" src={card.link} alt={card.name} onClick={handleClick} />
       <div className="place__item">
-        <h2 className="place__title">{props.data.name}</h2>
+        <h2 className="place__title">{card.name}</h2>
         <div className="place__container_like">
-          <button type="button" className="place__heart-button"></button>
-          <p className="place__heart-quantity">{props.data.likes.length}</p>
+          <button onClick={handleLikeClick} type="button" className={`place__heart-button ${isLiked ? "place__heart-button_active" : ""}`}></button>
+          <p className="place__heart-quantity">{card.likes.length}</p>
         </div>
       </div>
     </article>
