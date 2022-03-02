@@ -15,3 +15,8 @@
   right: 0;
   bottom: 0;
 }
+
+.popup_loader {
+  background: rgba(0, 0, 0, 0);
+  z-index: 200;
+}

@@ -183,3 +183,7 @@
 /*блок попап подтверждения удаления карточки*/
 
 @import url(../src/blocks/popup/__button/_delete/_card/popup__button_delete_card.css);
+
+
+/* стили лоадера */
+@import url(../src/blocks/loader/loader.css);

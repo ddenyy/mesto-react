@@ -12,7 +12,9 @@ import { currentUserContext } from "../contexts/CurrentUserContext.js";
 import EditProfilePopup from "./EditProfilePopup.jsx";
 import EditAvatarPopup from "./EditAvatarPopup.jsx";
 import AddPlacePopup from "./AddPlacePopup.jsx";
-import {configError} from "../utils/utils.js"
+import { configError } from "../utils/utils.js";
+import Loader from './Loader.jsx';
+import AcceptDeleteCardPopup from './AcceptDeleteCardPopup';
 
 function App() {
   // стейт открытия попапа редактирования профиля 
@@ -21,12 +23,18 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   // стейт открытия поапап редактирования аватара
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  // стейт для попапа открытия карточки на fullscreen
+  // стейт для открытия попапа подтверждения удаления
+  const [isAcceptDeletePopupOpen, setIsAcceptDeletePopupOpen] = React.useState(false);
+  // // стейт для удалённой карточки
+  const [cardDelete, isCardDelete] = React.useState({});
+  // стейт для открытия карточки на весь экран
   const [selectedCard, setSelectedCard] = React.useState({ name: '', link: '' });
   // стейт для информации текущего пользователя 
   const [currentUser, setCurrentUser] = React.useState({});
   // стейт для карточекы
   const [cards, setCards] = React.useState([]);
+  // стейт для лоадера
+  const [isLoader, setLoader] = React.useState(false);
 
   React.useEffect(() => {
     // рендер информации пользователя
@@ -45,7 +53,6 @@ function App() {
       })
       .catch((err) => { console.log(err) });
   }, [])
-
 
   // управление попапом изменение аватарки
   function handleEditAvatarClick() {
@@ -66,7 +73,8 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
-    setSelectedCard({ name: '', link: '' })
+    setSelectedCard({ name: '', link: '' });
+    setIsAcceptDeletePopupOpen(false);
   }
 
   // управление открытием картинки на весь экран 
@@ -75,6 +83,7 @@ function App() {
   }
 
   function handleUpdateUser(data) {
+    setLoader(true);
     api.updateUserInfo(data)
       .then((newData) => {
         setCurrentUser(newData);
@@ -83,16 +92,18 @@ function App() {
         closeAllPopups()
       })
       .catch((err) => console.log(err))
+      .finally(() => setLoader(false))
   }
 
   function handleUpdateAvatar(data) {
+    setLoader(true)
     api.updateUserAvatar(data.avatar)
       .then((newData) => {
-        console.log(newData);
         setCurrentUser(newData);
         closeAllPopups()
       })
       .catch((err) => { console.log(err) })
+      .finally(() => setLoader(false))
   }
 
   function handleCardLike(card) {
@@ -112,9 +123,22 @@ function App() {
     }
   }
 
+  // ф-ция подтверждения удаления
+  function handleAcceptDelete() {
+    handleCardDelete(cardDelete)
+  }
+
+  // ф-ция открытия попапа удаления карточки
+  function handleOpenPopupDelete(data) {
+    isCardDelete(data)
+    setIsAcceptDeletePopupOpen(true);
+  }
+
+  // ф-ция управляет удалением карточки
   function handleCardDelete(card) {
+    setLoader(true);
     api.deleteCard(card)
-      .then((data) => {
+      .then(() => {
         setCards((state) => {
           let copyState = state.filter((item) => {
             if (item._id != card._id) {
@@ -127,16 +151,25 @@ function App() {
           return copyState
         })
       })
+      .then(() => closeAllPopups())
+      .catch((err) => console.log(err))
+      .finally(() => setLoader(false))
   }
 
   function handleAddPlace(data) {
+    setLoader(true);
     api.addCard(data)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
       })
       .catch((err) => console.log(err))
+      .finally(() => {
+        setLoader(false)
+      })
   }
+
+
 
   return (
     <div className="App">
@@ -147,7 +180,7 @@ function App() {
             <Main
               cards={cards}
               onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
+              onCardDelete={handleOpenPopupDelete}
               onEditAvatar={handleEditAvatarClick}
               onEditProfile={handleEditProfileClick}
               onAddPlace={handleAddPlaceClick}
@@ -170,9 +203,14 @@ function App() {
             <EditAvatarPopup
               isOpen={isEditAvatarPopupOpen}
               onClose={closeAllPopups}
-              onUpdateAvatar={handleUpdateAvatar} 
+              onUpdateAvatar={handleUpdateAvatar}
             />
-            <PopupWithForm name="delete_card" title="Вы уверены ?" submitText="Да" />
+            <Loader isOpen={isLoader} />
+            <AcceptDeleteCardPopup
+              isAccept={handleAcceptDelete}
+              onClose={closeAllPopups}
+              isOpen={isAcceptDeletePopupOpen}
+            />
           </div>
         </div>
       </currentUserContext.Provider>

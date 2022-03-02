@@ -21,8 +21,6 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, canClean }) {
       name: pictureName,
       link: pictureLink
     })
-
-
   }
 
   // очищаем поля 
